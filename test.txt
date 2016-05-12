@@ -1,1 +1,2 @@
 this is a git example!
+it's fun to learn it!
