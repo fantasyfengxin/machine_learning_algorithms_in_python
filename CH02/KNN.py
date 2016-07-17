@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import operator
 from collections import Counter
 from scipy.spatial import distance
@@ -17,4 +18,13 @@ def classify0(example, data_set, labels, k):
 	label_count = Counter(np.array(labels)[key_indexes])
 	sorted_labels = sorted(label_count.items() ,key=operator.itemgetter(1), reverse=True)
 	return sorted_labels[0][0]
+
+def file2matrix(filename):
+	love_dictionary={'largeDoses':3, 'smallDoses':2, 'didntLike':1}
+	data = pd.read_table(filename, header=None)
+	feature_matrix = data.iloc[:, 0:-1].values
+	labels = data.iloc[:, -1].map(love_dictionary).values
+	return feature_matrix, labels
+
+
 
