@@ -3,6 +3,7 @@ import pandas as pd
 import operator
 from collections import Counter
 from scipy.spatial import distance
+from os import listdir
 
 
 def toyDatasets():
@@ -58,3 +59,38 @@ def datingClassTest(filename, ratio, k):
     return float(error_count) / test_size
 
 
+def img2vector(filename):
+    return_matrix = []
+    with open(filename, 'r') as file:
+        for i in range(32):
+            line = file.readline()
+            for j in range(32):
+                return_matrix.append(int(line[j]))
+    return np.array(return_matrix)
+
+
+def handwritingClassTest():
+    error_count = 0
+    labels = []
+    train_file_list = listdir('trainingDigits')
+    train_size = len(train_file_list)
+    train_matrix = np.zeros((train_size, 1024))
+    for i in range(train_size):
+        file_name = train_file_list[i]
+        label = int(train_file_list[i].split('_')[0])
+        labels.append(label)
+        full_file_name = 'trainingDigits/' + file_name
+        train_matrix[i,:] = img2vector(full_file_name)
+
+    # process the data for testing
+    test_file_list = listdir('testDigits')
+    test_size = len(test_file_list)
+    for i in range(test_size):
+        file_name = test_file_list[i]
+        label = int(file_name.split('_')[0])
+        full_file_name = 'testDigits/' + file_name
+        test_data = img2vector(full_file_name)
+        return_label = classify0(test_data, train_matrix, labels, 3)
+        if return_label != label:
+            error_count += 1
+    print 'the error rate is ', (float(error_count) / test_size)
