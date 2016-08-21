@@ -77,5 +77,50 @@ def testingNB():
 	entry_repr = setOfWords2Vec(vocal_list, test_entry)[0]
 	print(test_entry, 'classified as: ', classifyNB(entry_repr, feature_prob, label_prob))
 
+# A function to parse the document
+def textParse(bigString):
+	import re
+	list_of_tokens = re.split(r'\W*', bigString)
+	return [tok.lower() for tok in list_of_tokens if len(tok) > 2]
+
+# A function to do spam email classification
+def spamTest():
+	import random
+	doc_list = []; labels = [];
+	for i in range(1, 26):
+		with open('email/spam/{0}.txt'.format(i)) as file:
+			word_list = textParse(file.read())
+			doc_list.append(word_list)
+			labels.append(1)
+		with open('email/ham/{0}.txt'.format(i)) as file:
+			word_list = textParse(file.read())
+			doc_list.append(word_list)
+			labels.append(0)
+	vocal_list = createVocaList(doc_list)
+	training_set, testing_set = [], []
+	training_labels, testing_labels = [], []
+	test_index = random.sample(range(50), 10)
+	for i in range(50):
+		if i in test_index:
+			testing_set.append(doc_list[i])
+			testing_labels.append(labels[i])
+		else:
+			training_set.append(doc_list[i])
+			training_labels.append(labels[i])
+	training_matrix = setOfWords2Vec(vocal_list, training_set)
+	testing_matrix = setOfWords2Vec(vocal_list, testing_set)
+	feature_prob, label_prob = trainNB0(training_matrix, training_labels)
+	error = 0
+	for i in range(10):
+		classified = classifyNB(testing_matrix[i], feature_prob, label_prob)
+		if classified != testing_labels[i]:
+			error += 1
+	return error / 10
+
+
+
+
+
+
 
 
